@@ -10,24 +10,18 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import RegexpTokenizer
 
-# -----------------------------
-# 0️⃣ Download NLTK Resources
-# -----------------------------
+
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('vader_lexicon')
 
-# -----------------------------
-# 1️⃣ Initialize NLTK tools
-# -----------------------------
+
 sia = SentimentIntensityAnalyzer()
 stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()
 tokenizer = RegexpTokenizer(r'\w+')  # avoids punkt issues
 
-# -----------------------------
-# 2️⃣ Create Sample Reviews
-# -----------------------------
+
 reviews_df = pd.DataFrame({
     "App": [
         "WhatsApp", "WhatsApp",
@@ -50,7 +44,7 @@ reviews_df = pd.DataFrame({
 print("Original Reviews:\n", reviews_df)
 
 # -----------------------------
-# 3️⃣ Text Preprocessing
+# Text Preprocessing
 # -----------------------------
 def preprocess(text):
     text = text.lower()
@@ -67,12 +61,12 @@ for review, clean in zip(reviews_df["Review"], reviews_df["Clean_Review"]):
     print(f"Cleaned:  {clean}\n")
 
 # -----------------------------
-# 4️⃣ Sentiment Polarity
+#  Sentiment Polarity
 # -----------------------------
 reviews_df["Sentiment_Polarity"] = reviews_df["Clean_Review"].apply(lambda x: sia.polarity_scores(x)['compound'])
 
 # -----------------------------
-# 5️⃣ Convert to Sentiment Label (with better thresholds)
+# Convert to Sentiment Label (with better thresholds)
 # -----------------------------
 def sentiment_label(score):
     if score > 0.1:       # stronger positive
@@ -85,7 +79,7 @@ def sentiment_label(score):
 reviews_df["Sentiment"] = reviews_df["Sentiment_Polarity"].apply(sentiment_label)
 
 # -----------------------------
-# 6️⃣ Aspect-Based Sentiment Extraction
+#  Aspect-Based Sentiment Extraction
 # -----------------------------
 aspects = ["ads", "bugs", "crash", "slow", "performance"]
 
@@ -102,14 +96,14 @@ print("\nProcessed Reviews with Sentiment and Aspects:\n")
 print(reviews_df)
 
 # -----------------------------
-# 7️⃣ Average Sentiment per App
+# Average Sentiment per App
 # -----------------------------
 app_sentiment = reviews_df.groupby("App")["Sentiment_Polarity"].mean()
 print("\nAverage Sentiment per App:\n")
 print(app_sentiment)
 
 # -----------------------------
-# 8️⃣ Sentiment Distribution Visualization
+#  Sentiment Distribution Visualization
 # -----------------------------
 sentiment_counts = reviews_df["Sentiment"].value_counts()
 categories = ["Positive", "Neutral", "Negative"]  # ensure all categories appear
@@ -123,7 +117,7 @@ plt.ylabel("Number of Reviews")
 plt.show()
 
 # -----------------------------
-# 9️⃣ Aspect Frequency Visualization
+#  Aspect Frequency Visualization
 # -----------------------------
 aspect_series = reviews_df.explode("Aspects")["Aspects"].dropna()
 aspect_counts = aspect_series.value_counts()
